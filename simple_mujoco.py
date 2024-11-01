@@ -1,26 +1,31 @@
 import mujoco
 import mujoco.viewer
-import time
-import threading
 
 
 # Load the model
+spec = mujoco.MjSpec()
 model = mujoco.MjModel.from_xml_path("mujoco-model/unitree_go1/scene.xml")
 data = mujoco.MjData(model)
-viewer = mujoco.viewer.launch(model, data)
+
+model.opt.timestep = 0.002
+key_id = model.key("home").id
+mujoco.mj_resetDataKeyframe(model, data, key_id)
+pause_flag = True
 
 
-def sync_loop():
-    while viewer.is_running():
-        viewer.sync()
-        time.sleep(0.010)
+def key_callback(keycode):
+    viewer.lock()
+    if chr(keycode) == " ":
+        global pause_flag
+        pause_flag = not pause_flag
 
 
-thread = threading.Thread(target=sync_loop)
-thread.start()
+viewer = mujoco.viewer.launch_passive(model, data, key_callback=key_callback)
+
 # Run a viewer to interact with the simulation
 while viewer.is_running():
-    mujoco.mj_step(model, data)
-    # mujoco.mj_forward(model, data)
-
-thread.join()
+    if pause_flag:
+        mujoco.mj_forward(model, data)
+    else:
+        mujoco.mj_step(model, data)
+    viewer.sync()

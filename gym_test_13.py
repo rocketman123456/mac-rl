@@ -9,28 +9,18 @@ import torch
 from tqdm import tqdm
 import gymnasium as gym
 
-from agent.reinforce import REINFORCE
-
-plt.rcParams["figure.figsize"] = (10, 5)
+from framework.agent.reinforce import REINFORCE
+from framework.env.vectored_gym_env import VectoredGymEnv
 
 if __name__ == "__main__":
+    # plt.rcParams["figure.figsize"] = (10, 5)
     # Create and wrap the environment
-    # env = gym.make(
-    #     "InvertedPendulum-v5",
-    #     # render_mode="human",
-    # )
-    envs = gym.vector.AsyncVectorEnv(
-        [
-            lambda: gym.make(
-                "InvertedPendulum-v5",
-                # render_mode="human",
-            )
-            for i in range(4)
-        ]
-    )
+    name = "InvertedPendulum-v5"
+
+    envs = VectoredGymEnv(name, 2, True)
 
     # wrapped_env = gym.wrappers.RecordEpisodeStatistics(env, 50)  # Records episode-reward
-    wrapped_env = gym.wrappers.vector.RecordEpisodeStatistics(envs, 50)  # Records episode-reward
+    wrapped_env = gym.wrappers.vector.RecordEpisodeStatistics(envs.envs, 50)  # Records episode-reward
 
     use_cuda = False
     if use_cuda:
@@ -38,13 +28,13 @@ if __name__ == "__main__":
     else:
         device = torch.device("mps" if torch.mps.is_available() else "cpu")
 
-    total_num_episodes = int(5e3)  # Total number of episodes
+    total_num_episodes = int(1000)  # Total number of episodes
     # Observation-space of InvertedPendulum-v4 (4)
     # obs_space_dims = env.observation_space.shape[0]
-    obs_space_dims = envs.single_observation_space.shape[0]
+    obs_space_dims = envs.envs.single_observation_space.shape[0]
     # Action-space of InvertedPendulum-v4 (1)
     # action_space_dims = env.action_space.shape[0]
-    action_space_dims = envs.single_action_space.shape[0]
+    action_space_dims = envs.envs.single_action_space.shape[0]
     rewards_over_seeds = []
 
     agent = REINFORCE(device, obs_space_dims, action_space_dims)

@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from torch.distributions.normal import Normal
 
-from algorithms.policy_network import PolicyNetwork
+from framework.algorithms.policy_network import PolicyNetwork
 
 
 class REINFORCE:

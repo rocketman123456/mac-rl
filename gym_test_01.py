@@ -1,14 +1,3 @@
-"""
-Author: Zhang Yufeng 759094438@qq.com
-Date: 2024-11-17 21:47:03
-LastEditors: Zhang Yufeng 759094438@qq.com
-LastEditTime: 2024-11-17 21:47:05
-FilePath: /mac-robot/mac-rl/gym_test.py
-Description: 
-
-Copyright (c) 2024 by ${git_name_email}, All Rights Reserved. 
-"""
-
 import gymnasium as gym
 
 # Initialise the environment

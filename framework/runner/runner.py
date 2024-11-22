@@ -11,6 +11,7 @@ class PolicyRunner:
 
         self.total_num_episodes = int(10000)
 
+        # set random seed
         torch.manual_seed(env.seed)
         random.seed(env.seed)
         np.random.seed(env.seed)
